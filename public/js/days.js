@@ -47,27 +47,38 @@ var daysModule = (function () {
 
   function addDay () {
     if (this && this.blur) this.blur(); // removes focus box from buttons
-    var newDay = dayModule.create({ number: days.length + 1 }); // dayModule
-    days.push(newDay);
-    if (days.length === 1) {
-      currentDay = newDay;
-      switchTo(currentDay);
-    }
+
+    $.get('/api/numDays', function (num) {
+      $.post('/api/newDay', {number: num + 1}, function (day) {
+          var newDay = dayModule.create(day);
+          if (num === 0) {
+            currentDay = newDay;
+            switchTo(currentDay);
+          }
+        })
+      })
+
   }
 
   function deleteCurrentDay () {
     // prevent deleting last day
-    if (days.length < 2 || !currentDay) return;
-    // remove from the collection
-    var index = days.indexOf(currentDay),
-      previousDay = days.splice(index, 1)[0],
-      newCurrent = days[index] || days[index - 1];
-    // fix the remaining day numbers
-    days.forEach(function (day, i) {
-      day.setNumber(i + 1);
-    });
-    switchTo(newCurrent);
-    previousDay.hideButton();
+
+    $.get('/api/numDays')
+      .then(function (num) {
+        if (num < 2 || !currentDay) {console.log("But I won't do that. - Meatloaf")}
+        else {
+          return $.ajax({
+          url: '/api/rmvDay/' + currentDay.id,
+          type: 'DELETE'
+        });
+        }
+      })
+      // .then(function () {
+      //   $.get('/api/days')
+      // })
+      .then(function() {
+        $.post('/api/days', methods.load)
+      })
   }
 
   // globally accessible module methods
@@ -75,7 +86,18 @@ var daysModule = (function () {
   var methods = {
 
     load: function () {
-      $(addDay);
+      $.ajax({
+        method: 'GET',
+        url: '/api/days',
+        success: function (days) {
+          var daysArr = days.map(dayModule.create);
+          switchTo(daysArr[0]);
+        },
+        error: function (err) {
+          console.error(err);
+        }
+      });
+      // $(addDay);
     },
 
     switchTo: switchTo,
