@@ -2,7 +2,10 @@ var dayRouter = require('express').Router();
 var Day = require('../../models/day');
 
 dayRouter.get('/api/days', function (req, res, next) {
-
+  Day.findAll({})
+  .then(function (days) {
+    res.json(days);
+  });
 });
 
 dayRouter.get('/api/days/:dayID', function (req, res, next) {
@@ -10,7 +13,10 @@ dayRouter.get('/api/days/:dayID', function (req, res, next) {
 });
 
 dayRouter.post('/api/newDay', function (req, res, next) {
-  Day.create({number: req.body.number});
+  Day.create({number: req.body.number})
+  .then(function (day) {
+    res.send(day);
+  });
 });
 
 dayRouter.delete('/api/rmvDay', function (req, res, next) {
