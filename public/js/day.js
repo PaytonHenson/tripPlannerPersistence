@@ -99,12 +99,15 @@ var dayModule = (function () {
       case 'hotel':
         if (this.hotel) this.hotel.hide();
         this.hotel = attraction;
+        $.post('/api/days/' + this.id + '/hotels/' + this.hotel.id);
         break;
       case 'restaurant':
         utilsModule.pushUnique(this.restaurants, attraction);
+        $.post('/api/days/' + this.id + '/restaurants/' + this.restaurants[this.restaurants.length-1].id);
         break;
       case 'activity':
         utilsModule.pushUnique(this.activities, attraction);
+        $.post('/api/days/' + this.id + '/activities/' + this.activities[this.activities.length-1].id);
         break;
       default: console.error('bad type:', attraction);
     }
@@ -116,13 +119,19 @@ var dayModule = (function () {
     // removing from the day object
     switch (attraction.type) {
       case 'hotel':
+        $.ajax({
+                url: '/api/days/' + this.id + '/hotels/' + this.hotel.id,
+                type: 'DELETE'
+             });
         this.hotel = null;
         break;
       case 'restaurant':
         utilsModule.remove(this.restaurants, attraction);
+         // $.ajax({ url:'/api/days/' + this.id + '/restaurants/' + this.restaurants[this.restaurants.length-1].id);
         break;
       case 'activity':
         utilsModule.remove(this.activities, attraction);
+        // $.post('/api/days/' + this.id + '/activities/' + this.activities[this.activities.length-1].id);
         break;
       default: console.error('bad type:', attraction);
     }
