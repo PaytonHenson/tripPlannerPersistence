@@ -29,10 +29,10 @@ dayRouter.post('/api/newDay', function (req, res, next) {
 dayRouter.post('/api/days', function (req, res, next) {
   Day.findAll({})
   .then(function (days) {
-    var count = 1
-    days.forEach(function (e) {
-      e.update({number: count})
-      count ++;
+    var count = 1;
+    days.forEach(function (e, i) {
+      e.update({number: count});
+      count++;
     })
     res.sendStatus(206);
   });

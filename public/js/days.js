@@ -18,7 +18,6 @@
 var daysModule = (function () {
 
   // application state
-
   var days = [],
       currentDay;
 
@@ -46,17 +45,20 @@ var daysModule = (function () {
   });
 
   function addDay () {
+    console.log(days);
     if (this && this.blur) this.blur(); // removes focus box from buttons
 
     $.get('/api/numDays', function (num) {
       $.post('/api/newDay', {number: num + 1}, function (day) {
           var newDay = dayModule.create(day);
+          days.push(newDay);
+          console.log(days);
           if (num === 0) {
             currentDay = newDay;
             switchTo(currentDay);
           }
-        })
-      })
+        });
+      });
 
   }
 
@@ -73,12 +75,17 @@ var daysModule = (function () {
         });
         }
       })
-      // .then(function () {
-      //   $.get('/api/days')
-      // })
       .then(function() {
-        $.post('/api/days', methods.load)
+        days.forEach(function(e) {
+          e.hideButton();
+        });
+        var idx = days.indexOf(currentDay);
+        days.splice(idx, 1);
+        return $.post('/api/days');
       })
+      .then(function () {
+        methods.load();
+      });
   }
 
   // globally accessible module methods
@@ -89,15 +96,19 @@ var daysModule = (function () {
       $.ajax({
         method: 'GET',
         url: '/api/days',
-        success: function (days) {
-          var daysArr = days.map(dayModule.create);
+        success: function (dbDays) {
+          var daysArr = dbDays.map(dayModule.create);
+          days = [];
+          daysArr.forEach(function (e) {
+            days.push(e);
+          });
+          console.log(days);
           switchTo(daysArr[0]);
         },
         error: function (err) {
           console.error(err);
         }
       });
-      // $(addDay);
     },
 
     switchTo: switchTo,

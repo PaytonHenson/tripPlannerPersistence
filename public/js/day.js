@@ -64,6 +64,7 @@ var dayModule = (function () {
   };
 
   Day.prototype.hideButton = function () {
+    console.log("I'm in hiding");
     this.$button.detach(); // detach removes from DOM but not from memory
     return this;
   };
