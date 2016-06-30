@@ -15,9 +15,38 @@ $(function(){
   var $optionsPanel = $('#options-panel');
 
   // remember, second param of `forEach` is a `this` binding
-  hotels.forEach(makeOption, $optionsPanel.find('#hotel-choices'));
-  restaurants.forEach(makeOption, $optionsPanel.find('#restaurant-choices'));
-  activities.forEach(makeOption, $optionsPanel.find('#activity-choices'));
+  $.ajax({
+    method: 'GET',
+    url: '/api/hotels',
+    success: function (hotels) {
+      hotels.forEach(makeOption, $optionsPanel.find('#hotel-choices'));
+    },
+    error: function (err) {
+      console.error(err);
+    }
+  });
+
+  $.ajax({
+    method: 'GET',
+    url: '/api/restaurants',
+    success: function (restaurants) {
+      restaurants.forEach(makeOption, $optionsPanel.find('#restaurant-choices'));
+    },
+    error: function (err) {
+      console.error(err);
+    }
+  });
+
+  $.ajax({
+    method: 'GET',
+    url: '/api/activities',
+    success: function (activities) {
+      activities.forEach(makeOption, $optionsPanel.find('#activity-choices'));
+    },
+    error: function (err) {
+      console.error(err);
+    }
+  });
 
   // make a single `option` tag & associate it with an attraction object
   function makeOption (databaseAttraction) {
